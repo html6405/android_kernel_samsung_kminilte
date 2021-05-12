@@ -208,7 +208,6 @@ obj-$(CONFIG_MACH_GARDA)                += board-garda-muic.o
 obj-$(CONFIG_MACH_GARDA)		+= board-garda-modems.o
 obj-$(CONFIG_MACH_GARDA)                += board-garda-battery.o
 obj-$(CONFIG_MACH_GARDA)                += board-garda-sensor.o
-obj-$(CONFIG_MACH_GARDA)                += sec-reboot.o
 obj-$(CONFIG_MACH_GARDA)                += board-garda-wlan.o
 obj-$(CONFIG_MACH_GARDA)                += board-garda-thermistor.o
 obj-$(CONFIG_MACH_GARDA)		+= board-garda-fpga.o
@@ -233,7 +232,6 @@ obj-$(CONFIG_MACH_DEGAS)		+= board-degas-sensor.o
 obj-$(CONFIG_MACH_DEGAS)		+= board-degas-thermistor.o
 obj-$(CONFIG_MACH_DEGAS)		+= board-degas-usb.o
 obj-$(CONFIG_MACH_DEGAS)		+= board-degas-wlan.o
-obj-$(CONFIG_MACH_DEGAS)		+= sec-reboot.o
 
 obj-$(CONFIG_MACH_EXYNOS4_DT)		+= mach-exynos4-dt.o
 obj-$(CONFIG_MACH_EXYNOS5_DT)		+= mach-exynos5-dt.o
