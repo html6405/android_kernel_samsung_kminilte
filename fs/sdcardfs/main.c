@@ -34,7 +34,6 @@ enum {
 	Opt_reserved_mb,
 	Opt_gid_derivation,
 	Opt_default_normal,
-	Opt_unshared_obb,
 	Opt_err,
 };
 
@@ -46,9 +45,8 @@ static const match_table_t sdcardfs_tokens = {
 	{Opt_mask, "mask=%u"},
 	{Opt_userid, "userid=%d"},
 	{Opt_multiuser, "multiuser"},
-	{Opt_default_normal, "default_normal"},
-	{Opt_unshared_obb, "unshared_obb"},
 	{Opt_gid_derivation, "derive_gid"},
+	{Opt_default_normal, "default_normal"},
 	{Opt_reserved_mb, "reserved_mb=%u"},
 	{Opt_err, NULL}
 };
@@ -127,9 +125,6 @@ static int parse_options(struct super_block *sb, char *options, int silent,
 		case Opt_gid_derivation:
 			opts->gid_derivation = true;
 			break;
-		case Opt_unshared_obb:
-			opts->unshared_obb = true;
-			break;
 		case Opt_default_normal:
 			opts->default_normal = true;
 			break;
@@ -187,17 +182,11 @@ int parse_options_remount(struct super_block *sb, char *options, int silent,
 			vfsopts->mask = option;
 			break;
 		case Opt_default_normal:
-		case Opt_unshared_obb:
 		case Opt_multiuser:
 		case Opt_userid:
 		case Opt_fsuid:
 		case Opt_fsgid:
 		case Opt_reserved_mb:
-			pr_warn("Option \"%s\" can't be changed during remount\n", p);
-		case Opt_gid_derivation:
-			if (!silent)
-				pr_warn("Option \"%s\" can't be changed during remount\n", p);
-			printk( KERN_WARNING "Option \"%s\" can't be changed during remount\n", p);
 			pr_warn("Option \"%s\" can't be changed during remount\n", p);
 			break;
 		/* unknown option */
@@ -305,6 +294,13 @@ static int sdcardfs_read_super(struct vfsmount *mnt, struct super_block *sb,
 	lower_sb = lower_path.dentry->d_sb;
 	atomic_inc(&lower_sb->s_active);
 	sdcardfs_set_lower_super(sb, lower_sb);
+
+	sb->s_stack_depth = lower_sb->s_stack_depth + 1;
+	if (sb->s_stack_depth > FILESYSTEM_MAX_STACK_DEPTH) {
+		pr_err("sdcardfs: maximum fs stacking depth exceeded\n");
+		err = -EINVAL;
+		goto out_sput;
+	}
 
 	/* inherit maxbytes from lower file system */
 	sb->s_maxbytes = lower_sb->s_maxbytes;
